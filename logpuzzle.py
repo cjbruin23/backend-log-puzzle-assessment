@@ -34,11 +34,10 @@ def read_urls(filename):
     for line in file_object:
         if re.search(r'puzzle', line):
             url_search = re.search(r'(?<=GET\s)(.*)(?=\sHTTP)', line).group()
+            print url_search
             url_string = 'http://code.google.com' + url_search
             url_strings.append(url_string)
     url_lst = sorted(set(url_strings))
-    # for item in url_lst:
-    #     print item
     return url_lst
 
 
@@ -59,12 +58,17 @@ def download_images(img_urls, dest_dir):
         open_html = """<html><head></head><body>"""
         message = ""
         closing_html = """</body></html>"""
+        
         for i, img in enumerate(img_urls):
             print 'Retrieving'
+            # Grab image and add it to local destination
             img_dest = './' + dest_dir + '/img' + str(i) + '.png'
+            urllib.urlretrieve(img, img_dest)
+
+            # Add image destination to image tags for html
             img_tag = "<img src='" + img + "'>"
             message += img_tag
-            urllib.urlretrieve(img, img_dest)
+            
         full_html = open_html + message + closing_html
         html_file.write(full_html)
         html_file.close()
