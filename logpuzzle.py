@@ -31,15 +31,32 @@ def read_urls(filename):
     Screens out duplicate urls and returns the urls sorted into
     increasing order."""
     # +++your code here+++
+
+    # split image name by -
+    # if split is long enough, switch long_string to True
+    # if long_string is True
+        # Sort the url strings by the last four characters before .jpg
+
+    long_string = False
     file_object = open(filename, "r")
     url_strings = []
     for line in file_object:
         if re.search(r'puzzle', line):
             url_search = re.search(r'(?<=GET\s)(.*)(?=\sHTTP)', line).group()
-            print url_search
+            img_name = url_search.split('/')[-1]
+            print img_name
+            split_lst = img_name.split('-')
+            if len(split_lst) > 2:
+                long_string = True
             url_string = 'http://code.google.com' + url_search
             url_strings.append(url_string)
-    url_lst = sorted(set(url_strings))
+    if long_string == False:
+        url_lst = sorted(set(url_strings))
+    else:
+        url_lst = sorted(url_strings, key = lambda x: x[-7:-3])
+
+    for url in url_lst:
+        print url
     return url_lst
 
 
@@ -54,25 +71,24 @@ def download_images(img_urls, dest_dir):
     # +++your code here+++
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir)
-    else:
-        html_file = open(dest_dir + '/index.html', 'w')
-        open_html = """<html><head></head><body>"""
-        message = ""
-        closing_html = """</body></html>"""
+    html_file = open(dest_dir + '/index.html', 'w')
+    open_html = """<html><head></head><body>"""
+    message = ""
+    closing_html = """</body></html>"""
 
-        for i, img in enumerate(img_urls):
-            print 'Retrieving'
-            # Grab image and add it to local destination
-            img_dest = './' + dest_dir + '/img' + str(i) + '.png'
-            urllib.urlretrieve(img, img_dest)
+    for i, img in enumerate(img_urls):
+        print 'Retrieving'
+        # Grab image and add it to local destination
+        img_dest = './' + dest_dir + '/img' + str(i) + '.png'
+        urllib.urlretrieve(img, img_dest)
 
-            # Add image destination to image tags for html
-            img_tag = "<img src='" + img + "'>"
-            message += img_tag
+        # Add image destination to image tags for html
+        img_tag = "<img src='" + img + "'>"
+        message += img_tag
 
-        full_html = open_html + message + closing_html
-        html_file.write(full_html)
-        html_file.close()
+    full_html = open_html + message + closing_html
+    html_file.write(full_html)
+    html_file.close()
     return
 
 
