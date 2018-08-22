@@ -35,11 +35,12 @@ def read_urls(filename):
     # split image name by -
     # if split is long enough, switch long_string to True
     # if long_string is True
-        # Sort the url strings by the last four characters before .jpg
+    # Sort the url strings by the last four characters before .jpg
 
     long_string = False
     file_object = open(filename, "r")
     url_strings = []
+
     for line in file_object:
         if re.search(r'puzzle', line):
             url_search = re.search(r'(?<=GET\s)(.*)(?=\sHTTP)', line).group()
@@ -50,10 +51,11 @@ def read_urls(filename):
                 long_string = True
             url_string = 'http://code.google.com' + url_search
             url_strings.append(url_string)
-    if long_string == False:
-        url_lst = sorted(set(url_strings))
+
+    if long_string:
+        url_lst = sorted(url_strings, key=lambda x: x[-7:-3])
     else:
-        url_lst = sorted(url_strings, key = lambda x: x[-7:-3])
+        url_lst = sorted(set(url_strings))
 
     for url in url_lst:
         print url
